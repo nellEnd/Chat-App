@@ -1,0 +1,86 @@
+/* ChatWindow.css */
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+  }
+  
+  #chat {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    border: 1px solid #a69fcd;
+    padding: 10px;
+    width: auto;
+    height: 450px;
+    overflow-y:auto;
+    /* scrollbar-color: #a69fcd #ccc7e4 ;
+    scrollbar-width: thin; */
+  }
+  #chat::-webkit-scrollbar-thumb {
+    background-color: #3b82f6; /* Thumb color */
+    border-radius: 10px; /* Rounded thumb */
+    border: 2px solid #f4f4f4; /* Padding around thumb */
+  }
+  
+  .message-box {
+    display: flex;
+    margin-bottom: 10px;
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+  }
+  
+  .message-box.sent {
+    background-color: rgb(255, 123, 71);
+    align-self: flex-end;
+    color: #fff;
+  }
+  
+  .message-box.received {
+    background-color: #b9b8b8;
+    align-self: flex-start;
+    color: #000;
+  }
+  
+  .message-content {
+    font-size: 14px;
+  }
+  
+  .username {
+    font-weight: bold;
+    font-size: 14px;
+    margin-right: 5px;
+  }
+  
+  .message-input-wrapper {
+    display: flex;
+    padding: 10px;
+    background-color: rgb(166, 159, 205);
+  }
+  
+  .message-input-wrapper input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+  }
+  
+  .message-input-wrapper button {
+    padding: 10px 20px;
+    border: none;
+    background-color: rgb(255, 123, 71);
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .message-input-wrapper button:hover {
+
+      background-color: rgb(249, 166, 133);
+  }
+  
