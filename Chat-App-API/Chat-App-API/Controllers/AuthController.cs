@@ -3,6 +3,7 @@ using Chat_App_API.DTO;
 using Chat_App_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -37,27 +38,18 @@ namespace Chat_App_API.Controllers
 			return Ok(new {message = "User registered successfully!"});
 		}
 
-
-		[HttpGet("hej")]
-		public IActionResult Hej()
-		{
-			return Ok("Hej!!");
-		}
-
 		[HttpPost("login")]
-		public IActionResult Login([FromBody] LoginRequest request)
+		public IActionResult Login([FromBody] LoginDTO loginDto)
 		{
-			var user = _context.Users.SingleOrDefault(u => u.Username == request.Username);
+			// chech if user exists in database
+			var user = _context.Users.SingleOrDefault(u => u.Username == loginDto.Username);
 
-			if(user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+			if(user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
 				return Unauthorized(new {message= "Invalid credentials." });
 
 			var token = GenerateJwtToken(user);
 			return Ok(new {Token = token});
 		}
-
-		[HttpPost("invite")]
-		public IActionResult InviteToPrivateChat([FromBody])
 
 		private static string GenerateJwtToken(User user)
 		{
@@ -76,6 +68,40 @@ namespace Chat_App_API.Controllers
 
 			var token = tokenHandler.CreateToken(tokenDescriptor);
 			return tokenHandler.WriteToken(token);
+		}
+
+
+
+		//NOT IN USE
+		[HttpPost("invite")]
+		public IActionResult InviteToPrivateChat([FromBody] PrivateChatRequest chatReq)
+		{
+			var senderUser = _context.Users.FirstOrDefault(u => u.Username == chatReq.SenderUsername);
+			var receivedUser = _context.Users.FirstOrDefault(u => u.Username == chatReq.ReceivedUsername);
+
+			if (receivedUser == null)
+			{
+				return NotFound(new { message = "User not found." });
+			}
+
+			var privateChatRoom = new PrivateChatRoom
+			{
+				IsPrivate = true,
+				Participants = new List<User> { senderUser, receivedUser }
+			};
+
+			_context.PrivateChatRooms.Add(privateChatRoom);
+			_context.SaveChanges();
+
+			return Ok(new { message = "Invite sent" });
+		}
+
+		[HttpGet("users")]
+		public async Task<IActionResult> GetUsers()
+		{
+			var users = await _context.Users.Select(u => new { u.Id, u.Username }).ToListAsync();
+
+			return Ok(users);
 		}
 	}
 }

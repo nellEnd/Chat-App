@@ -8,10 +8,21 @@ namespace Chat_App_API.Data
 	public class ChatContext:DbContext
 	{
 		public ChatContext(DbContextOptions<ChatContext> options) : base(options) { }
-		public DbSet<ChatMessage> ChatMessages { get; set; } // The table of chat messages
+		public DbSet<ChatMessage> ChatMessages { get; set; } 
 
-		public DbSet<User> Users { get; set; } // The table consisting of users
-		public DbSet<Conversation> Conversations { get; set; } // The table consisting of convos
+		public DbSet<User> Users { get; set; } 
+		public DbSet<Conversation> Conversations { get; set; } 
+
+		public DbSet<PrivateChatRoom> PrivateChatRooms { get; set; } 
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<PrivateChatRoom>()
+               	.HasMany(c => c.Participants)
+	            .WithMany(u => u.PrivateChatRooms); // Many-to-Many relation mellan chattrum och användare
+
+		}
 
 	}
 }
