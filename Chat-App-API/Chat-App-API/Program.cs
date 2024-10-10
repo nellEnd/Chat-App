@@ -7,6 +7,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Net;
+using Chat_App_API.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +18,7 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowReactApp", builder =>
 	{
-		builder.WithOrigins("https://localhost:3000") // React URL 
+		builder.WithOrigins("https://localhost:3001") // React URL 
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
@@ -57,18 +60,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		};
 	});
 builder.Services.AddAuthorization();
+builder.Services.AddDbContext<ChatContext>(options =>
+	options.UseSqlite(builder.Configuration.GetConnectionString("ChatDbConnection")));
 
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-	options.ListenAnyIP(5068); // HTTP
-	options.ListenAnyIP(7188, listenOptions =>
+	//options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
+	/*options.ListenAnyIP(5068); // HTTP
+*/
+	options.ListenAnyIP(5001, listenOptions =>
 	{
 		//listenOptions.UseHttps("C:/Users/nelly/source/repos/ChatApp/Certificat/mycert.pfx", "2nnK1nto6+VV"); // HTTPS
-		listenOptions.UseHttps();
+		//listenOptions.UseHttps("C:/Users/nelly/source/repos/ChatApp/Certs/mycerty.pfx", "2nnK1nto6+VVV");
+		listenOptions.UseHttps("C:/Users/nelly/source/repos/ChatApp/certis/mylocalcert.pfx", "x5jZ};9r23Kw");
+		//listenOptions.UseHttps();
 	});
 });
-
 
 
 var app = builder.Build();
