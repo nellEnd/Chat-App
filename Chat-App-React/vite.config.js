@@ -11,6 +11,6 @@ export default defineConfig({
       key: fs.readFileSync(path.resolve(__dirname, 'C:/Users/nelly/source/repos/ChatApp/Certificat/mykey.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'C:/Users/nelly/source/repos/ChatApp/Certificat/mycert.crt')),
     },
-    port: 3000,
+    port: 3001,
   },    
 });

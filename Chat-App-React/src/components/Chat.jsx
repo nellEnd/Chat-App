@@ -24,7 +24,7 @@ const Chat = () => {
       setUsername(decodedJwt.unique_name);
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("https://localhost:7188/chathub", {
+        .withUrl("https://localhost:5001/chathub", {
           accessTokenFactory: () => token,
         })
         .build();

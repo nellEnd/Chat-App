@@ -22,7 +22,7 @@ const Login = () => {
 
   const loginSuccess = async () => {
     try {
-      const response = await fetch("https://localhost:7188/api/auth/login", {
+      const response = await fetch("https://localhost:5001/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,7 +36,7 @@ const Login = () => {
           text: data.message,
           duration: 2000,
         }).showToast();
-        setTimeout(() => navigate("/chat"), 2000);
+        setTimeout(() => navigate("/start"), 2000);
       } else {
         Toastify({
           text: "Username or password is incorrect. Try again.",
@@ -55,8 +55,8 @@ const Login = () => {
   return (
     <>
       <div className="container">
-        <form id="loginForm" onSubmit={handleSubmit}>
-          <h1>Login</h1>
+        <form className="loginForm" id="loginForm" onSubmit={handleSubmit}>
+          <h2>Login</h2>
           <input
             type="text"
             id="username"
@@ -73,7 +73,7 @@ const Login = () => {
             placeholder="Password"
             required
           />
-          <button type="submit" disabled={loading}>
+          <button className="loginBtn" type="submit" disabled={loading}>
             Login
           </button>
           <div className="clearfix"></div>

@@ -1,0 +1,42 @@
+.signupContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrerar elementen horisontellt */
+    justify-content: center; /* Centrerar elementen vertikalt */
+    height: 300px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10vh;
+    width: 40vw;
+    padding: 2em;
+    background-color: rgb(166, 159, 205);
+  }
+
+
+
+  
+  .inputs {
+    margin-bottom: 1px; /* Skapar utrymme mellan fälten */
+    padding: 10px; /* Lägger till inre avstånd för att göra inputfältet mer användarvänligt */
+    width: 100%; 
+    border-radius: 0.7rem; /* Gör hörnen rundade */  
+  }
+
+ 
+  
+  .signupBtn {
+    padding: 10px 20px; /* Lägger till inre avstånd för knappen */
+    background-color: rgb(255, 123, 71);
+    color: white; /* Sätter textfärgen för knappen */
+    border: none; /* Tar bort standardkantlinjen */
+    border-radius: 0.7rem; /* Gör hörnen rundade */
+    cursor: pointer; /* Ändrar muspekaren till en hand när den hovrar över knappen */
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .signupBtn:hover {
+    background-color: rgb(249, 166, 133);
+}
+  
