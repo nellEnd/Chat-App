@@ -17,9 +17,10 @@ const ChatWindow = ({
   // Scroll to the bottom when a new message is received
   useEffect(() => {
     if (chatRef.current) {
+      // Scroll the chat to the bottom by setting scrollTop to the scrollHeight
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages]); // Run this effect whenever the messages array changes (new message)
 
   return (
     <div>
@@ -28,6 +29,7 @@ const ChatWindow = ({
           <div
             key={index}
             className={`message-box ${
+              // Check if the message is sent or received, triggers different css depending on state
               msg.user === username ? "sent" : "received"
             }`}
           >

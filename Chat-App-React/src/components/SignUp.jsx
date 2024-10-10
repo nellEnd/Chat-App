@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Toastify from "toastify-js";
 import "./Signup.css";
-// import "./Chat.css";
 
 const SignupForm = () => {
   const [username, setUsername] = useState("");
@@ -12,7 +11,9 @@ const SignupForm = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       Toastify({
         text: "Passwords do not match!",
@@ -22,6 +23,8 @@ const SignupForm = () => {
     }
 
     try {
+
+      // Send POST request to server to create a new user
       const response = await fetch("https://localhost:5001/api/auth/signup", {
         method: "POST",
         headers: {
@@ -35,6 +38,7 @@ const SignupForm = () => {
       });
 
       if (response.ok) {
+        // If request was successful navigate to login page
         navigate("/login");
       } else {
         const data = await response.json();

@@ -15,20 +15,25 @@ const Chat = () => {
   const chatRef = useRef(null);
   const navigate = useNavigate();
 
-  // On component mount, set up SignalR connection
+  // useEffect to handle the setup of the SignalR connection on component mount
   useEffect(() => {
+
+    // Get JWT token form session storage
     const token = sessionStorage.getItem("jwtToken");
 
+    // if token exists decote it and establish SignalR connection
     if (token) {
       const decodedJwt = JSON.parse(atob(token.split(".")[1]));
       setUsername(decodedJwt.unique_name);
 
+      // Create a new signalR connection
       const newConnection = new signalR.HubConnectionBuilder()
         .withUrl("https://localhost:5001/chathub", {
-          accessTokenFactory: () => token,
+          accessTokenFactory: () => token, // Attach JWT token to the connection
         })
         .build();
 
+        // Start sinalR connection
       newConnection
         .start()
         .then(() => {
@@ -46,22 +51,30 @@ const Chat = () => {
     };
   }, []);
 
-  // Handle receiving messages from the server
+  // useEffect to handle receiving messages from the server when the connection is established
   useEffect(() => {
     if (connection) {
+
+      // Function for receiveing messages from the server
       const receiveMessageHandler = (user, message) => {
         console.log("Received message:", "User:", user, "Message:", message);
+
+        // Sanitize the received user and message to prevent XSS attacks
         const sanitizedUser = DOMPurify.sanitize(user, { ALLOWED_TAGS: ["b"] });
         const sanitizedMessage = DOMPurify.sanitize(message, {
           ALLOWED_TAGS: ["b"],
         });
+        
+        // Update the messages state to include new message
         setMessages((prevMessages) => [
           ...prevMessages,
           { user: sanitizedUser, message: sanitizedMessage },
         ]);
       };
-      // Register event listener
+
+      // Register event listener to listen for messages from server
       connection.on("ReceiveMessage", receiveMessageHandler);
+
       // Clean up the event listener when the component unmounts or connection changes
       return () => {
         connection.off("ReceiveMessage", receiveMessageHandler);
@@ -69,29 +82,11 @@ const Chat = () => {
     }
   }, [connection]);
 
-  /*if (connection) {
-       connection.on("ReceiveMessage", (user, message) => {
-        console.log("Received message:", "User:", user, "Message:", message);
-        const sanitizedUser = DOMPurify.sanitize(user, { ALLOWED_TAGS: ["b"] });
-        const sanitizedMessage = DOMPurify.sanitize(message, {
-          ALLOWED_TAGS: ["b"],
-        });
-        setMessages((prevMessages) => {
-          const newMessages = [
-            ...prevMessages,
-            { user: sanitizedUser, message: sanitizedMessage },
-          ];
-          console.log("Updated messages:", newMessages);
-          return newMessages;
-        });
-      });
-    }
-  }, [connection]); */
-
   // Send message function
   const sendMessage = () => {
     if (message.trim() && connection) {
       try {
+        // Send message with username to server
         connection.send("sendMessage", username, message).then(() => {
           setMessage(""); // Clear input field after sending
           console.log("Sending message: ", message);
@@ -105,6 +100,8 @@ const Chat = () => {
   // Log out and stop the connection
   const logOut = () => {
     if (connection) {
+
+      // Stop conncetion and remove JWT token from session storage
       connection
         .stop()
         .then(() => {
@@ -125,6 +122,7 @@ const Chat = () => {
     }
   };
 
+  // If user not authorized, tell user
   if (!authorized) {
     return (
       <div className="wrapper">
@@ -144,7 +142,6 @@ const Chat = () => {
         handleKeyPress={handleKeyPress}
       />
       <img src={logoutLogo} className="logout" onClick={logOut}></img>
-      {/* <button className="logout" onClick={logOut}>Log Out</button> */}
     </div>
   );
 };
