@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center; /* Centrerar elementen horisontellt */
     justify-content: center; /* Centrerar elementen vertikalt */
-    height: 300px;
+    height: 350px;
     border-radius: 10px;
     margin-left: auto;
     margin-right: auto;
@@ -34,6 +34,7 @@
     cursor: pointer; /* Ändrar muspekaren till en hand när den hovrar över knappen */
     width: 100%;
     margin-top: 20px;
+    margin-bottom: 20px;
   }
   
   .signupBtn:hover {

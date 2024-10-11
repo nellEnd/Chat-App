@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Toastify from "toastify-js";
 import "./Signup.css";
 
@@ -30,6 +30,7 @@ const SignupForm = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        // Convert java object to JSON-string
         body: JSON.stringify({
           username,
           password,
@@ -92,6 +93,8 @@ const SignupForm = () => {
         </div>
         <button className="signupBtn" type="submit">Sign Up</button>
       </form>
+      <Link to="/login">Already have an account? Log in here!</Link>
+
     </div>
   );
 };
