@@ -16,23 +16,32 @@ namespace Chat_App_API.Controllers
 	public class AuthController : ControllerBase
 	{
 		private readonly ChatContext _context;
+		private readonly IConfiguration _config;
 
-		public AuthController(ChatContext context)
+		public AuthController(ChatContext context, IConfiguration config)
 		{
 			_context = context;
+			_config = config;
 		}
 
 
 		[HttpPost("signup")]
 		public IActionResult Signup([FromBody] UserDTO userDto)
 		{
+			// Check if the password and confirm password match
 			if (userDto.Password != userDto.ConfirmPassword)
 				return BadRequest(new { message = "Passwords do not match." });
 
+			// Hash the user's password using BCrypt for security
 			var hashedPass = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
+			// Create a new User object with the provided username and the hashed password
 			var user = new User { Username = userDto.Username, PasswordHash = hashedPass };
 
+			// Add new user to database
 			_context.Users.Add(user);
+
+			// Save new user to database
 			_context.SaveChanges();
 
 			return Ok(new {message = "User registered successfully!"});
@@ -41,28 +50,38 @@ namespace Chat_App_API.Controllers
 		[HttpPost("login")]
 		public IActionResult Login([FromBody] LoginDTO loginDto)
 		{
-			// chech if user exists in database
+			// Check if user exists in database
 			var user = _context.Users.SingleOrDefault(u => u.Username == loginDto.Username);
 
-			if(user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+			// If user does not exist or the password does not match the stored hash, return unauthorized
+			if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
 				return Unauthorized(new {message= "Invalid credentials." });
 
+			// If login detail are valid generate a JWT token for the user
 			var token = GenerateJwtToken(user);
+
+			// Return the token as a part of the successful login response
 			return Ok(new {Token = token});
 		}
 
-		private static string GenerateJwtToken(User user)
+		private string GenerateJwtToken(User user)
 		{
 			var tokenHandler = new JwtSecurityTokenHandler();
-			var key = Encoding.ASCII.GetBytes("d5df9b30d5891d6e19c3eda79aef6fa0181cb5f0da195f2bbb54022c7d217b1b"); // private key
 
+			// Fetch the secret key from configuration
+			var key = Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"]);
+
+			// Set token properties
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = new ClaimsIdentity(new Claim[]
 				{
+					// Add claims to the token(username)
 	            	  new Claim(ClaimTypes.Name, user.Username)
 				}),
 				Expires = DateTime.UtcNow.AddHours(2),
+
+				// Specify the signing algorithm and the key used for signing the token
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
 

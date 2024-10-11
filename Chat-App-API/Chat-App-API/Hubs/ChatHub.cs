@@ -21,7 +21,7 @@ namespace Chat_App_API.Hubs
 		// When client connects
 		public override async Task OnConnectedAsync()
 		{
-			//If logged in, load last 50 messages
+			//If logged in, load last 50 messages from database
 			if (Context.User?.Identity != null && Context.User.Identity.IsAuthenticated)
 			{
 				var messages = _context.ChatMessages
@@ -30,7 +30,7 @@ namespace Chat_App_API.Hubs
 					.Take(50)
 					.ToList();
 				
-				// display every message
+				// Display every message
 				foreach (var message in messages)
 				{
 					await Clients.Caller.SendAsync("ReceiveMessage", message.Username, message.Message);
@@ -61,7 +61,7 @@ namespace Chat_App_API.Hubs
 		}
 
 
-		// NOT IN USE
+		///////////////// NOT IN USE/////
 		public async Task SendPrivateMessage(string chatRoomId, string user, string message)
 		{
 			Guid newConvoId = Guid.Parse(chatRoomId);

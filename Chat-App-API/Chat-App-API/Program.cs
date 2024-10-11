@@ -25,6 +25,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
+var jwtSecretKey = builder.Configuration["JwtSettings:SecretKey"];
+
+if (string.IsNullOrEmpty(jwtSecretKey))
+{
+	throw new InvalidOperationException("JWT secret key is not configured.");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
 	{
@@ -34,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateAudience = false,
 			ValidateLifetime = true,
 			ValidateIssuerSigningKey = true,
-			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("d5df9b30d5891d6e19c3eda79aef6fa0181cb5f0da195f2bbb54022c7d217b1b")) // Replace with your secret key
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey))
 		};
 
 		// Handle the JWT in the SignalR connection
