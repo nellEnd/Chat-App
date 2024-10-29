@@ -17,7 +17,6 @@ const Chat = () => {
 
   // useEffect to handle the setup of the SignalR connection on component mount
   useEffect(() => {
-
     // Get JWT token form session storage
     const token = sessionStorage.getItem("jwtToken");
 
@@ -33,7 +32,7 @@ const Chat = () => {
         })
         .build();
 
-        // Start sinalR connection
+      // Start sinalR connection
       newConnection
         .start()
         .then(() => {
@@ -54,7 +53,6 @@ const Chat = () => {
   // useEffect to handle receiving messages from the server when the connection is established
   useEffect(() => {
     if (connection) {
-
       // Function for receiveing messages from the server
       const receiveMessageHandler = (user, message) => {
         console.log("Received message:", "User:", user, "Message:", message);
@@ -64,7 +62,7 @@ const Chat = () => {
         const sanitizedMessage = DOMPurify.sanitize(message, {
           ALLOWED_TAGS: ["b"],
         });
-        
+
         // Update the messages state to include new message
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -100,7 +98,6 @@ const Chat = () => {
   // Log out and stop the connection
   const logOut = () => {
     if (connection) {
-
       // Stop conncetion and remove JWT token from session storage
       connection
         .stop()
