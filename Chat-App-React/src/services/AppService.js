@@ -11,4 +11,20 @@ export const loginUser = async (username, password) => {
         throw new Error("Username or password is incorrect.");
 
     return await response.json();
+};
+
+export const signUp = async (username, password, confirmPassword) => {
+    const response = await fetch("https://localhost:5001/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password, confirmPassword }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "An unexpected error occurred.");
+      }
+    
+      return response.json();
 }

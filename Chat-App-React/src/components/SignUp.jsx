@@ -2,18 +2,31 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { signUp } from "../services/AppService";
 import "./Signup.css";
 
 const SignupForm = () => {
-  const { signup } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Invoke signup function from AuthContext
-    signup(username, password, confirmPassword);
+
+    if (password !== confirmPassword) {
+      Toastify({ text: "Passwords do not match!", duration: 3000 }).showToast();
+      return;
+    }
+
+    try {
+      await signUp(username, password, confirmPassword);
+      Toastify({ text: "Registration successful!", duration: 3000 }).showToast();
+      navigate("/login"); // Navigera till inloggningssidan efter lyckad registrering
+    } catch (error) {
+      Toastify({ text: error.message, duration: 3000 }).showToast();
+    }
   };
 
   return (
