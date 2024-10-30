@@ -1,60 +1,19 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Toastify from "toastify-js";
+// SignupForm.js
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 import "./Signup.css";
 
 const SignupForm = () => {
+  const { signup } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    // Check if password and confirmPassword match
-    if (password !== confirmPassword) {
-      Toastify({
-        text: "Passwords do not match!",
-        duration: 3000,
-      }).showToast();
-      return;
-    }
-
-    try {
-
-      // Send POST request to server to create a new user
-      const response = await fetch("https://localhost:5001/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Convert java object to JSON-string
-        body: JSON.stringify({
-          username,
-          password,
-          confirmPassword,
-        }),
-      });
-
-      if (response.ok) {
-        // If request was successful navigate to login page
-        navigate("/login");
-      } else {
-        const data = await response.json();
-        Toastify({
-          text: data.message,
-          duration: 3000,
-        }).showToast();
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      Toastify({
-        text: "An unexpected error occurred. Please try again.",
-        duration: 3000,
-      }).showToast();
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Invoke signup function from AuthContext
+    signup(username, password, confirmPassword);
   };
 
   return (
@@ -91,10 +50,11 @@ const SignupForm = () => {
             required
           />
         </div>
-        <button className="signupBtn" type="submit">Sign Up</button>
+        <button className="signupBtn" type="submit">
+          Sign Up
+        </button>
       </form>
       <Link to="/login">Already have an account? Log in here!</Link>
-
     </div>
   );
 };

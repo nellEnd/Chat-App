@@ -15,72 +15,72 @@ export const ChatProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
- // Sätter upp SignalR on component mount
+ // Set up SignalR on component mount
  useEffect(() => {
     const token = sessionStorage.getItem("jwtToken"); // Hämta JWT-token från sessionStorage
     if (token) {
-        // Dekodera token för att få användarnamnet
+        // Decode token to access username
         const decodedJwt = JSON.parse(atob(token.split(".")[1]));
         setUsername(decodedJwt.unique_name);
 
-        // Skapa en ny SignalR-anslutning med JWT-token
+        // Create new SignalR connection with JWT-token
         const newConnection = new signalR.HubConnectionBuilder()
             .withUrl("https://localhost:5001/chathub", {
                 accessTokenFactory: () => token,
             })
             .build();
 
-        // Starta SignalR-anslutningen
+        // Start SignalR connection
         newConnection
             .start()
             .then(() => {
                 console.log("Connected to the hub!");
-                setConnection(newConnection); // Sätt anslutningen i state
+                setConnection(newConnection); // set connection in state
             })
             .catch((err) => console.error("Connection error:", err));
     } else {
-        setAuthorized(false); // Om ingen token finns, är användaren ej auktoriserad
+        setAuthorized(false); // If token don't exist, user is not authorized
     }
 
-    // Clean up anslutningen vid avmontering
+    // Clean up connection on unmount
     return () => {
         if (connection) connection.stop();
     };
 }, []);
 
-// lyssna på inkommande meddelanden från servern när anslutningen är etablerad
+// listen for incoming messages from the server when the connection is established
 useEffect(() => {
     if (connection) {
-        // Hantera mottagande av meddelanden från servern
+        // Handle receiving messages from server
         const receiveMessageHandler = (user, message) => {
-            // Sanera användarnamn och meddelande för att undvika XSS-attacker
+            // Sanitize user & message to prevent XXS attacks
             const sanitizedUser = DOMPurify.sanitize(user, { ALLOWED_TAGS: ["b"] });
             const sanitizedMessage = DOMPurify.sanitize(message, { ALLOWED_TAGS: ["b"] });
 
-            // Uppdatera meddelanden-state med det nya meddelandet
+            // Update message state with new message
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { user: sanitizedUser, message: sanitizedMessage },
             ]);
         };
 
-        // Registrera event listener för att ta emot meddelanden från servern
+        // Register event listener to receive messages from server
         connection.on("ReceiveMessage", receiveMessageHandler);
 
-        // Ta bort event listener när komponenten avmonteras eller anslutningen ändras
+        // Remove event event listener on component unmount or connection changes
         return () => {
             connection.off("ReceiveMessage", receiveMessageHandler);
         };
     }
 }, [connection]);
 
-// Funktion för att skicka meddelanden till servern
+// Send messages to server
 const sendMessage = () => {
     if (message.trim() && connection) {
         try {
-            // Skicka meddelandet med användarnamn till servern
+            // Send message with username to server
             connection.send("sendMessage", username, message).then(() => {
-                setMessage(""); // Töm meddelandefältet efter att ha skickat
+                setMessage(""); // Empty message field when sent
                 console.log("Sending message: ", message);
             });
         } catch (err) {
@@ -89,10 +89,10 @@ const sendMessage = () => {
     }
 };
 
-// Funktion för att logga ut användaren och stoppa anslutningen
+// Function to log out the user and stop the connection
 const logOut = () => {
     if (connection) {
-        // Stoppa anslutningen och ta bort JWT-token från sessionStorage
+        // Stop connection and remove JWT-token from sessionStorage
         connection
             .stop()
             .then(() => {
@@ -106,14 +106,14 @@ const logOut = () => {
     }
 };
 
-// Funktion för att hantera när användaren trycker på Enter-tangenten (för att skicka meddelande)
+// Handle when user presses "Enter" button to send message
 const handleKeyPress = (event) => {
     if (event.key === "Enter" && message.trim()) {
         sendMessage();
     }
 };
 
-// Ge contextvärdena till child components genom ChatContext.Provider
+// Give context values to child components with ChatContext.Provider
 return (
     <ChatContext.Provider
         value={{

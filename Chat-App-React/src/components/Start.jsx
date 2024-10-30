@@ -39,17 +39,6 @@ const Start = () => {
       navigate("/login");
     }
 
-    // start connection
-
-    //Listen for invitations
-    //   newConnection.on("ReceiveInvitation", (inviter, chatRoomId) => {
-    //     setInvitation({ inviter, chatRoomId }); // save invitations
-    //     alert(`${inviter} has invited you to a private chat!`);
-    //     console.log(`${inviter} has invited you to a private chat!`);
-    //   });
-    // })
-    // .catch((err) => console.error("Connection error: ", err));
-
     // Stop connection on unmount
   }, [navigate]); // Empty array = will only run on component mount
 
@@ -110,20 +99,6 @@ const Start = () => {
           </li>
         ))}
       </ul>
-
-      {/* Show notification when user gets invitation */}
-      {/* {invitation && (
-          <div>
-            <p>
-              {invitation.inviter} har bjudit in dig till ett privat chattrum!
-            </p>
-            <button
-              onClick={() => navigate(`/private-chat/${invitation.chatRoomId}`)}
-            >
-              Join chat
-            </button>
-          </div>
-        )} */}
     </div>
   );
 };

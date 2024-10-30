@@ -1,30 +1,23 @@
 // ChatWindow.js
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import DOMPurify from "dompurify";
 import "./ChatWindow.css";
 import "./Chat.css";
+import { ChatContext } from "../context/ChatContext";
 
-const ChatWindow = ({
-  messages,
-  username,
-  sendMessage,
-  message,
-  setMessage,
-  handleKeyPress,
-}) => {
-  const chatRef = useRef(null);
-
-  // Scroll to the bottom when a new message is received
-  useEffect(() => {
-    if (chatRef.current) {
-      // Scroll the chat to the bottom by setting scrollTop to the scrollHeight
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  }, [messages]); // Run this effect whenever the messages array changes (new message)
+const ChatWindow = () => {
+  const {
+    messages,
+    username,
+    sendMessage,
+    message,
+    setMessage,
+    handleKeyPress,
+  } = useContext(ChatContext);
 
   return (
     <div>
-      <div id="chat" ref={chatRef}>
+      <div id="chat">
         {messages.map((msg, index) => (
           <div
             key={index}
